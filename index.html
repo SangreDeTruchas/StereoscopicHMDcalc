@@ -5,11 +5,19 @@
   <style>
     .container {
       display: flex;
-      justify-content: space-around;
+      justify-content: space-evenly;
       width: 800px;
       margin: 0 auto;
       padding: 10px;
       border: 1px solid #ccc;
+    }
+    .text-body {
+        display: flex;
+        justify-content: flex-start;
+        width: 800px;
+        margin: 0 auto;
+        padding: 10px;
+        border: 1px solid #ccc;
     }
     .input-group {
       margin-bottom: 10px;
@@ -183,5 +191,27 @@
     });
     
   </script>
+  <div class="container">
+      <div class="text-body">
+        <p>
+          <b>Display Panel Width & Height</b><br> 
+          Pretty self-explanatory, these correspond to the active area of the display panel.<br>With Dual Panels, this is the width of a <i>single</i> panel.<br><br>
+          <b>Horizontal & Vertical Resolution</b><br>Resolution of your display. With Dual Panels, these correspond to the resolution of a <i>single</i> panel.<br><br>
+          <b>IPD / Lens Spacing</b><br>Single Panels: The distance between the two lenses center-to-center.<br>Dual Panels: This should be the same as the users inter-pupillary distance.<br><br>
+          <b>Dual-Screen Display Offset</b><br>Single Panels: Ignore<br>Dual Panels: This is the horizontal offset of the lenses relative to the display panels.<br>Positive numbers move the panels outwards, increasing monocular FOV.<br>Negative numbers move the panels inwards, increasing binocular FOV.<br><br>
+          <b>Screen Divider Thickness</b><br>Single Panels: Thickness of the divider that separates the screen.<br>Dual Panels: Ignore<br><br>
+        </p>
+      </div>
+      <div class="text-body">
+        <p>
+          <b>Lens Diameter</b><br>The diameter of the lens, in millimeters.<br><br>
+          <b>Lens Focal Length</b><br>The focal length of the lens, in millimeters.<br><br>
+          <b>Lens Thickness</b><br>(Ignore) The thickness of the lens, in millimeters.<br>This is only used for geometry generation that is not yet implemented.<br><br>
+          <b>Desired Focal Plane</b><br>This is the desired virtual focal plane in millimeters.<br>1500-2500mm is typical for commercial VR headsets.<br><br>
+          <b>Build Tolerance</b><br>This is used to calculate the final virtual focal plane depth.<br>If you're 3D printing a headset, your typical layer height is a safe value.<br><br>
+          <b>Sweet-Spot FOV</b><br>Sweet-Spot FOV in degrees. (30 - 60 recommended)<br>This is only used for calculating the "Sweet-Spot PPD".<br><br>
+        </p>
+      </div>
+  </div>
 </body>
 </html>
