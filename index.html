@@ -51,51 +51,51 @@
   </div>
   <div class="container">
     <div class="input-group">
-      <input type="number" id="width" value="120.96" step="0.01" /> Display Panel Width<br>
-      <input type="number" id="height" value="68.04" step="0.01" /> Display Panel Height<br>
-      <input type="number" id="resx" value="2560" step="1.0" /> Horizontal Resolution<br>
-      <input type="number" id="resy" value="1440" step="1.0" /> Vertical Resolution<br>
-      <input type="number" id="IPD" value="64" step="0.1" /> IPD / Lens Spacing<br>
-      <input type="number" id="dualoffset" value="0" step="0.1" /> Dual-Screen Display Offset<br>
-      <input type="number" id="divider" value="1" step="0.1" /> Screen Divider Thickness<br>
+      <input type="number" id="width" value="120.96" step="0.01" title="Display panel width in millimeters. For Dual Panels, this is the width of a single panel."/> Display Panel Width<br>
+      <input type="number" id="height" value="68.04" step="0.01" title="Display panel height in millimeters." /> Display Panel Height<br>
+      <input type="number" id="resx" value="2560" step="1.0" title="Horizontal Resolution in pixels. For Dual Panels, this is the the resolution of a single panel."/> Horizontal Resolution<br>
+      <input type="number" id="resy" value="1440" step="1.0" title="Vertical Resolution in pixels."/> Vertical Resolution<br>
+      <input type="number" id="IPD" value="64" step="0.1" title="This is your lens spacing, center-to-center. Ideally it should match the interpupillary distance of the user."/> IPD / Lens Spacing<br>
+      <input type="number" id="dualoffset" value="0" step="0.1" title="(Single Panels: Ignore) Dual Panels: This is the horizontal offset of the lenses relative to the display panels. Positive numbers move the panels outwards, increasing monocular FOV. Negative numbers move the panels inwards, increasing binocular FOV."/> Dual-Screen Display Offset<br>
+      <input type="number" id="divider" value="1" step="0.1" title="Single Panel: This is the thickness of the screen divider. Dual Panels: Ignore"/> Screen Divider Thickness<br>
     </div>
     <div class="input-group">
-        <input type="number" id="lensD" value="60" step="0.01" /> Lens Diameter<br>
-        <input type="number" id="lensF" value="30" step="0.01" /> Lens Focal Length<br>
-        <input type="number" id="lensT" value="2" step="0.01" /> Lens Thickness<br>
-        <input type="number" id="desiredFocus" value="1500" step="0.01" /> Desired Focal Plane<br>
-        <input type="number" id="tolerance" value="0.2" step="0.01" /> Build Tolerance<br>
-        <input type="number" id="sweetFOV" value="30" step="0.01" /> Sweet-Spot FOV<br>
+        <input type="number" id="lensD" value="60" step="0.01" title="Lens diameter in millimeters."/> Lens Diameter<br>
+        <input type="number" id="lensF" value="30" step="0.01" title="Lens focal length in millimeters." /> Lens Focal Length<br>
+        <input type="number" id="lensT" value="2" step="0.01" title="Lens thickness in millimeters. This is only relevant to geometry output, which is not yet implemented."/> Lens Thickness<br>
+        <input type="number" id="desiredFocus" value="1500" step="0.01" title="This is the desired virtual focal plane in millimeters. 1500-2500mm is typical for commercial VR headsets."/> Desired Focal Plane<br>
+        <input type="number" id="tolerance" value="0.2" step="0.01" title="This is used to calculate the final virtual focal plane depth. If you're 3D printing a headset, your typical layer height is a safe value."/> Build Tolerance<br>
+        <input type="number" id="sweetFOV" value="30" step="0.01" title="Sweet-Spot FOV in degrees. (30 - 60 recommended) This is only used for calculating the Sweet-Spot PPD."/> Sweet-Spot FOV<br>
     </div>
   </div>
 
   <div class="container">
     <div class="output">
-        <input type="text" id="pixelDimensions" readonly /> Pixel Size (Microns)<br>
-        <input type="text" id="pixelLoss" readonly /> Pixel Loss <br>
-        <input type="text" id="focalPlane" readonly /> Virtual Focal Plane <br>
-        <input type="text" id="magnification" readonly /> Magnification <br>
-        <input type="text" id="idealRelief" readonly /> Ideal Eye Relief <br>
-        <input type="text" id="lensO" readonly /> Lens Offset <br>
-        <input type="text" id="eyeScreen" readonly /> Eye/Screen Offset <br>
+        <input type="text" id="pixelDimensions" readonly title="Dimensions of a single pixel, in microns."/> Pixel Size (Microns)<br>
+        <input type="text" id="pixelLoss" readonly title="(Dual Panels: Ignore) Single Panels: This is the number of pixels covered by the screen divider."/> Pixel Loss <br>
+        <input type="text" id="focalPlane" readonly title="This is the virtual focal plane depth in millimeters. It is as near to the Focal Plane parameter as is possible with the specified Tolerance."/> Virtual Focal Plane <br>
+        <input type="text" id="magnification" readonly title="Magnification at lens offset derived from calculated virtual focal plane depth."/> Magnification <br>
+        <input type="text" id="idealRelief" readonly title="Ideal Eye Relief, in millimeters."/> Ideal Eye Relief <br>
+        <input type="text" id="lensO" readonly title="Distance between the lens center and display panel surface, in millimeters."/> Lens Offset <br>
+        <input type="text" id="eyeScreen" readonly title="Total distance from the eye to the surface of the display panel at the Ideal Eye Relief, in millimeters."/> Eye/Screen Offset <br>
     </div>
     <div class="output">
-        <input type="text" id="monoFOV" readonly /> Monocular FOV <br>
-        <input type="text" id="binoFOV" readonly /> Binocular FOV <br>
-        <input type="text" id="vertFOV" readonly /> Vertical FOV <br>
-        <input type="text" id="oneEyeFOV" readonly /> One-Eye Horizontal FOV <br>
-        <input type="text" id="temporal" readonly /> Temporal Angle <br>
-        <input type="text" id="nasal" readonly /> Nasal Angle <br>
-        <input type="text" id="sweetD" readonly /> Sweet Spot Diameter <br>
+        <input type="text" id="monoFOV" readonly title="Combined Maximum Temporal FOV, in degrees."/> Monocular FOV <br>
+        <input type="text" id="binoFOV" readonly title="Combined Maximum Nasal FOV, in degrees."/> Binocular FOV <br>
+        <input type="text" id="vertFOV" readonly title="Total Maximum Vertical FOV, in degrees."/> Vertical FOV <br>
+        <input type="text" id="oneEyeFOV" readonly title="Total Maximum Horizontal FOV of a single eye, in degrees."/> One-Eye Horizontal FOV <br>
+        <input type="text" id="temporal" readonly title="Maximum Temporal Viewing Angle, in degrees."/> Temporal Angle <br>
+        <input type="text" id="nasal" readonly title="Maximum Nasal Viewing Angle, in degrees."/> Nasal Angle <br>
+        <input type="text" id="sweetD" readonly title="Diameter of the specified Sweet-Spot FOV on display surface, in millimeters."/> Sweet Spot Diameter <br>
     </div>
     <div class="output">
-        <input type="text" id="monoCutoff" readonly /> Monocular Cutoff <br>
-        <input type="text" id="binoCutoff" readonly /> Binocular Cutoff <br>
-        <input type="text" id="vertCutoff" readonly /> Vertical Cutoff <br>
-        <input type="text" id="ppdHorizontal" readonly /> PPD Horizontal Avg. <br>
-        <input type="text" id="ppdVertical" readonly /> PPD Vertical Avg. <br>
-        <input type="text" id="ppdSweetHorizontal" readonly /> Sweet Spot Horizontal PPD <br>
-        <input type="text" id="ppdSweetVertical" readonly /> Sweet Spot Vertical PPD <br>
+        <input type="text" id="monoCutoff" readonly title="Eye Relief required to achieve maximum monocular FOV, in millimeters."/> Monocular Cutoff <br>
+        <input type="text" id="binoCutoff" readonly title="Eye Relief required to achieve maximum binocular FOV, in millimeters."/> Binocular Cutoff <br>
+        <input type="text" id="vertCutoff" readonly title="Eye Relief required to achieve maximum vertical FOV, in millimeters."/> Vertical Cutoff <br>
+        <input type="text" id="ppdHorizontal" readonly title="Average Horizontal PPD across maximum horizontal FOV of a single eye."/> PPD Horizontal Avg. <br>
+        <input type="text" id="ppdVertical" readonly title="Average Vertical PPD across maximum vertical FOV of a single eye."/> PPD Vertical Avg. <br>
+        <input type="text" id="ppdSweetHorizontal" readonly title="Average Horizontal PPD across the Sweet-Spot"/> Sweet Spot Horizontal PPD <br>
+        <input type="text" id="ppdSweetVertical" readonly title="Average Vertical PPD across the Sweet-Spot"/> Sweet Spot Vertical PPD <br>
     </div>
   </div>
 
@@ -193,24 +193,7 @@
   </script>
   <div class="container">
       <div class="text-body">
-        <p>
-          <b>Display Panel Width & Height</b><br> 
-          Pretty self-explanatory, these correspond to the active area of the display panel.<br>With Dual Panels, this is the width of a <i>single</i> panel.<br><br>
-          <b>Horizontal & Vertical Resolution</b><br>Resolution of your display. With Dual Panels, these correspond to the resolution of a <i>single</i> panel.<br><br>
-          <b>IPD / Lens Spacing</b><br>Single Panels: The distance between the two lenses center-to-center.<br>Dual Panels: This should be the same as the users inter-pupillary distance.<br><br>
-          <b>Dual-Screen Display Offset</b><br>Single Panels: Ignore<br>Dual Panels: This is the horizontal offset of the lenses relative to the display panels.<br>Positive numbers move the panels outwards, increasing monocular FOV.<br>Negative numbers move the panels inwards, increasing binocular FOV.<br><br>
-          <b>Screen Divider Thickness</b><br>Single Panels: Thickness of the divider that separates the screen.<br>Dual Panels: Ignore<br><br>
-        </p>
-      </div>
-      <div class="text-body">
-        <p>
-          <b>Lens Diameter</b><br>The diameter of the lens, in millimeters.<br><br>
-          <b>Lens Focal Length</b><br>The focal length of the lens, in millimeters.<br><br>
-          <b>Lens Thickness</b><br>(Ignore) The thickness of the lens, in millimeters.<br>This is only used for geometry generation that is not yet implemented.<br><br>
-          <b>Desired Focal Plane</b><br>This is the desired virtual focal plane in millimeters.<br>1500-2500mm is typical for commercial VR headsets.<br><br>
-          <b>Build Tolerance</b><br>This is used to calculate the final virtual focal plane depth.<br>If you're 3D printing a headset, your typical layer height is a safe value.<br><br>
-          <b>Sweet-Spot FOV</b><br>Sweet-Spot FOV in degrees. (30 - 60 recommended)<br>This is only used for calculating the "Sweet-Spot PPD".<br><br>
-        </p>
+        Hover your mouse over the various inputs and outputs, there are descriptive tooltips for each.
       </div>
   </div>
 </body>
