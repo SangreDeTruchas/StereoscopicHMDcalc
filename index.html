@@ -22,6 +22,9 @@
     .input-group input {
       width: 64px;
     }
+    .radio-group input {
+      width: 64px;
+    }
     .output {
       
       padding: 5px;
@@ -33,14 +36,20 @@
 </head>
 <body>
   <div class="container">
+    <div class="radio-group">
+      <input type="radio" name="mode" value="single" checked> Single Panel -or- Dual Panel
+      <input type="radio" name="mode" value="dual">
+    </div>
+  </div>
+  <div class="container">
     <div class="input-group">
       <input type="number" id="width" value="120.96" step="0.01" /> Display Panel Width<br>
       <input type="number" id="height" value="68.04" step="0.01" /> Display Panel Height<br>
       <input type="number" id="resx" value="2560" step="1.0" /> Horizontal Resolution<br>
       <input type="number" id="resy" value="1440" step="1.0" /> Vertical Resolution<br>
-      <input type="number" id="IPD" value="64" step="0.01" /> IPD / Lens Spacing<br>
-      <input type="number" id="dualoffset" value="0" step="0.01" /> Dual-Screen Display Offset<br>
-      <input type="number" id="divider" value="1" step="0.01" /> Screen Divider Thickness<br>
+      <input type="number" id="IPD" value="64" step="0.1" /> IPD / Lens Spacing<br>
+      <input type="number" id="dualoffset" value="0" step="0.1" /> Dual-Screen Display Offset<br>
+      <input type="number" id="divider" value="1" step="0.1" /> Screen Divider Thickness<br>
     </div>
     <div class="input-group">
         <input type="number" id="lensD" value="60" step="0.01" /> Lens Diameter<br>
@@ -83,23 +92,96 @@
   </div>
 
   <script>
+    function degrees(radians) {
+      return radians * (180 / Math.PI);
+    }
+    function radians(degrees) {
+      return degrees * (Math.PI/180);
+    }
     function updateOutputs() {
+      const mode = document.querySelector('input[name="mode"]:checked').value;
       const width = parseFloat(document.getElementById('width').value);
       const height = parseFloat(document.getElementById('height').value);
       const resx = parseFloat(document.getElementById('resx').value);
       const resy = parseFloat(document.getElementById('resy').value);
-
+      const IPD = parseFloat(document.getElementById('IPD').value);
+      const dualoffset = parseFloat(document.getElementById('dualoffset').value);
+      const divider = parseFloat(document.getElementById('divider').value);
+      const lensD = parseFloat(document.getElementById('lensD').value);
+      const lensF = parseFloat(document.getElementById('lensF').value);
+      const lensT = parseFloat(document.getElementById('lensT').value);
+      const desiredFocus = parseFloat(document.getElementById('desiredFocus').value);
+      const tolerance = parseFloat(document.getElementById('tolerance').value);
+      const sweetFOV = parseFloat(document.getElementById('sweetFOV').value);
       const pixWidth = width / resx;
       const pixHeight = height / resy;
-
+      const lensO = Math.round((-1 / ((1 / -lensF) - (1 / desiredFocus))) / tolerance) * tolerance;
+      const virtualPlane = -1 / (1/lensF - 1/lensO);
+      const magnification = lensF / (lensF - lensO);
+      const verticalFOV = degrees(2 * Math.atan((magnification * (height / 2)) / virtualPlane));
+      var pixelLoss = 0;
+      var temporal = 0;
+      var nasal = 0;
+      if (mode == "single"){
+        pixelLoss = (divider/pixWidth).toFixed(2);
+        temporal = degrees(Math.atan((magnification * ((width - IPD) / 2)) / virtualPlane));
+        nasal = degrees(Math.atan((magnification * ((IPD - (divider / 2)) / 2)) / virtualPlane));
+      } else {
+        pixelLoss = 0;
+        temporal = degrees(Math.atan((magnification * ((width/2) + dualoffset)) / virtualPlane));
+        nasal = degrees(Math.atan((magnification * ((width/2) - dualoffset)) / virtualPlane));
+      }
+      const oneEye = nasal + temporal
+      const monoFOV = temporal*2
+      const binoFOV = nasal*2
+      const monoCutoff = (lensD/2) / Math.tan(radians(temporal))
+      const binoCutoff = (lensD/2) / Math.tan(radians(nasal))
+      const vertCutoff = (lensD/2) / Math.tan(radians(verticalFOV/2))
+      const ideal = Math.min(binoCutoff,monoCutoff,vertCutoff)
+      const sweetD = 2 * lensF * Math.tan(radians(sweetFOV/2))
+      var ppdhorizontal = 0;
+      if (mode == "single"){
+        ppdhorizontal = ((resx - (divider/pixWidth))/2)/(oneEye)
+      } else {
+        ppdhorizontal = resx/oneEye
+      }
+      const ppdvertical = resy/verticalFOV
+      const sweetPPDhorizontal = (sweetD/pixWidth)/sweetFOV
+      const sweetPPDvertical = (sweetD/pixHeight)/sweetFOV
+      const eyeScreenOffset = lensO + ideal
+    
       document.getElementById('pixelDimensions').value = pixWidth.toFixed(3)*1000 + "x" + pixHeight.toFixed(3)*1000;
+      document.getElementById('pixelLoss').value = pixelLoss + "px";
+      document.getElementById('focalPlane').value = virtualPlane.toFixed(2);
+      document.getElementById('magnification').value = magnification.toFixed(2);
+      document.getElementById('idealRelief').value = ideal.toFixed(2);
+      document.getElementById('lensO').value = lensO.toFixed(2);
+      document.getElementById('eyeScreen').value = eyeScreenOffset.toFixed(2);
+      document.getElementById('monoFOV').value = monoFOV.toFixed(2);
+      document.getElementById('binoFOV').value = binoFOV.toFixed(2);
+      document.getElementById('vertFOV').value = verticalFOV.toFixed(2);
+      document.getElementById('oneEyeFOV').value = oneEye.toFixed(2);
+      document.getElementById('temporal').value = temporal.toFixed(2);
+      document.getElementById('nasal').value = nasal.toFixed(2);
+      document.getElementById('sweetD').value = sweetD.toFixed(2);
+      document.getElementById('monoCutoff').value = monoCutoff.toFixed(2);
+      document.getElementById('binoCutoff').value = binoCutoff.toFixed(2);
+      document.getElementById('vertCutoff').value = vertCutoff.toFixed(2);
+      document.getElementById('ppdHorizontal').value = ppdhorizontal.toFixed(2);
+      document.getElementById('ppdVertical').value = ppdvertical.toFixed(2);
+      document.getElementById('ppdSweetHorizontal').value = sweetPPDhorizontal.toFixed(2);
+      document.getElementById('ppdSweetVertical').value = sweetPPDvertical.toFixed(2);
     }
     updateOutputs();
-
+    var radioButtons = document.querySelectorAll('input[name="mode"]');
+    radioButtons.forEach(function(radioButton) {
+      radioButton.addEventListener('change', updateOutputs);
+    });
     const inputs = document.querySelectorAll('.input-group input');
     inputs.forEach((input) => {
       input.addEventListener('input', updateOutputs);
     });
+    
   </script>
 </body>
 </html>
