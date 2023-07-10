@@ -1,0 +1,339 @@
+<html>
+  <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>Stereoscopic HMD Interactive Calculator</title>
+  <style>
+    .container {
+      display: flex;
+      justify-content: space-evenly;
+      width: 800px;
+      margin: 0 auto;
+      padding: 10px;
+      border: 1px solid #ccc;
+    }
+    .text-body {
+        display: flex;
+        justify-content: flex-start;
+        width: 800px;
+        margin: 0 auto;
+        padding: 10px;
+        border: 1px solid #ccc;
+    }
+    .input-group {
+      margin-bottom: 10px;
+      padding: 5px;
+    }
+    .input-group label {
+      display: block;
+      margin-bottom: 5px;
+    }
+    .input-group input {
+      width: 64px;
+    }
+    .radio-group input {
+      width: 64px;
+    }
+    .output {
+      
+      padding: 5px;
+    }
+    .output input {
+        width: 64px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a href="index.html">Return to the new page.</a>
+  </div>
+  <div class="container">
+    <div class="radio-group">
+      <input type="radio" name="mode" value="single" checked> Single Panel -or- Dual Panel
+      <input type="radio" name="mode" value="dual" >
+    </div>
+  </div>
+  <div class="container">
+    <div class="input-group">
+      <input type="number" id="width" value="120.96" step="0.01" title="Display panel width in millimeters. For Dual Panels, this is the width of a single panel."> Display Panel Width<br>
+      <input type="number" id="height" value="68.04" step="0.01" title="Display panel height in millimeters."> Display Panel Height<br>
+      <input type="number" id="resx" value="2560" step="1.0" title="Horizontal Resolution in pixels. For Dual Panels, this is the the resolution of a single panel."> Horizontal Resolution<br>
+      <input type="number" id="resy" value="1440" step="1.0" title="Vertical Resolution in pixels."> Vertical Resolution<br>
+      <input type="number" id="IPD" value="64" step="0.1" title="This is your lens spacing, center-to-center. Ideally it should match the interpupillary distance of the user."> IPD / Lens Spacing<br>
+      <input type="number" id="dualoffset" value="0" step="0.1" title="(Single Panels: Ignore) Dual Panels: This is the horizontal offset of the display panels. Positive numbers move each panel outwards, increasing monocular FOV. Negative numbers move the panels inwards, increasing binocular FOV."> Dual-Screen Display Offset<br>
+      <input type="number" id="divider" value="1" step="0.1" title="Single Panel: This is the thickness of the screen divider. Dual Panels: Ignore"> Screen Divider Thickness<br>
+    </div>
+    <div class="input-group">
+        <input type="number" id="lensD" value="60" step="0.01" title="Lens diameter in millimeters."> Lens Diameter<br>
+        <input type="number" id="lensF" value="30" step="0.01" title="Lens focal length in millimeters."> Lens Focal Length<br>
+        <input type="number" id="lensT" value="2" step="0.01" title="Lens thickness in millimeters. This is only relevant to geometry output, which is not yet implemented."> Lens Thickness<br>
+        <input type="number" id="desiredFocus" value="1500" step="0.01" title="This is the desired virtual focal plane in millimeters. 1500-2500mm is typical for commercial VR headsets."> Desired Focal Plane<br>
+        <input type="number" id="tolerance" value="0.2" step="0.01" title="This is used to calculate the final virtual focal plane depth. If you&#39;re 3D printing a headset, your typical layer height is a safe value."> Build Tolerance<br>
+        <input type="number" id="sweetFOV" value="30" step="0.01" title="Sweet-Spot FOV in degrees. (30 - 60 recommended) This is only used for calculating the Sweet-Spot PPD."> Sweet-Spot FOV<br>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="output">
+        <input type="text" id="pixelDimensions" readonly="" title="Dimensions of a single pixel, in microns."> Pixel Size (Microns)<br>
+        <input type="text" id="pixelLoss" readonly="" title="(Dual Panels: Ignore) Single Panels: This is the number of pixels covered by the screen divider."> Pixel Loss <br>
+        <input type="text" id="focalPlane" readonly="" title="This is the virtual focal plane depth in millimeters. It is as near to the Focal Plane parameter as is possible with the specified Tolerance."> Virtual Focal Plane <br>
+        <input type="text" id="magnification" readonly="" title="Magnification at lens offset derived from calculated virtual focal plane depth."> Magnification <br>
+        <input type="text" id="idealRelief" readonly="" title="Ideal Eye Relief, in millimeters."> Ideal Eye Relief <br>
+        <input type="text" id="lensO" readonly="" title="Distance between the lens center and display panel surface, in millimeters."> Lens Offset <br>
+        <input type="text" id="eyeScreen" readonly="" title="Total distance from the eye to the surface of the display panel at the Ideal Eye Relief, in millimeters."> Eye/Screen Offset <br>
+    </div>
+    <div class="output">
+        <input type="text" id="monoFOV" readonly="" title="Combined Maximum Temporal FOV, in degrees."> Monocular FOV <br>
+        <input type="text" id="binoFOV" readonly="" title="Combined Maximum Nasal FOV, in degrees."> Binocular FOV <br>
+        <input type="text" id="vertFOV" readonly="" title="Total Maximum Vertical FOV, in degrees."> Vertical FOV <br>
+        <input type="text" id="diagFOV" readonly="" title="Maximum Diagonal FOV, in degrees."> Diagonal FOV <br>
+        <input type="text" id="oneEyeFOV" readonly="" title="Total Maximum Horizontal FOV of a single eye, in degrees."> One-Eye Horizontal FOV <br>
+        <input type="text" id="temporal" readonly="" title="Maximum Temporal Viewing Angle, in degrees."> Temporal Angle <br>
+        <input type="text" id="nasal" readonly="" title="Maximum Nasal Viewing Angle, in degrees."> Nasal Angle <br>
+        <input type="text" id="sweetD" readonly="" title="Diameter of the specified Sweet-Spot FOV on display surface, in millimeters."> Sweet Spot Diameter <br>
+    </div>
+    <div class="output">
+        <input type="text" id="monoCutoff" readonly="" title="Eye Relief required to achieve maximum monocular FOV, in millimeters."> Monocular Cutoff <br>
+        <input type="text" id="binoCutoff" readonly="" title="Eye Relief required to achieve maximum binocular FOV, in millimeters."> Binocular Cutoff <br>
+        <input type="text" id="vertCutoff" readonly="" title="Eye Relief required to achieve maximum vertical FOV, in millimeters."> Vertical Cutoff <br>
+        <input type="text" id="diagCutoff" readonly="" title="Eye Relief required to achieve maximum diagonal FOV, in millimeters."> Diagonal Cutoff <br>
+        <input type="text" id="ppdHorizontal" readonly="" title="Average Horizontal PPD across maximum horizontal FOV of a single eye."> PPD Horizontal Avg. <br>
+        <input type="text" id="ppdVertical" readonly="" title="Average Vertical PPD across maximum vertical FOV of a single eye."> PPD Vertical Avg. <br>
+        <input type="text" id="ppdSweetHorizontal" readonly="" title="Average Horizontal PPD across the Sweet-Spot"> Sweet Spot Horizontal PPD <br>
+        <input type="text" id="ppdSweetVertical" readonly="" title="Average Vertical PPD across the Sweet-Spot"> Sweet Spot Vertical PPD <br>
+    </div>
+  </div>
+  
+  <div class="container">
+    <div class="text-body">
+      Hover your mouse over the various inputs and outputs, there are descriptive tooltips for each.
+    </div>
+  </div>
+  <div class="container"><div class="text-body"><canvas id="myCanvas" width="800" height="605"></canvas></div></div>
+  <script>
+
+    const canvas = document.getElementById("myCanvas");
+    const ctx = canvas.getContext("2d");
+    const centerX = canvas.width/2;
+    const centerY = canvas.height/2;
+    
+    function drawGrid(scale) {
+      // scale in pixels/mm
+      var spacing = 10 * scale;
+      if (spacing <= 20) {
+        spacing = spacing * 10
+      }
+      const xcount = Math.ceil(canvas.width / spacing);
+      const ycount = Math.ceil(canvas.height / spacing);
+      const xOffset = (canvas.width - (xcount * spacing)) / 2;
+      const yOffset = (canvas.height - (ycount * spacing)) / 2;
+      
+      ctx.lineWidth = 1;
+      ctx.strokeStyle = "#050505";
+      ctx.beginPath();
+      for (let x = 0; x < xcount; x++) {
+        ctx.moveTo(x * spacing + xOffset, 0 + yOffset);
+        ctx.lineTo(x * spacing + xOffset, canvas.height - yOffset);
+      }
+      for (let y = 0; y < ycount; y++) {
+        ctx.moveTo(0 + xOffset, y * spacing + yOffset);
+        ctx.lineTo(canvas.width - xOffset, y * spacing + yOffset);
+      }
+      ctx.stroke();
+    }
+    function drawScreen(x,y,width,height){
+        ctx.fillStyle = "#0A0A0A";
+        const newX = x-(width/2);
+        const newY = y-(height/2);
+        ctx.fillRect(newX-1,newY-1,width+2,height+2);
+        ctx.fillStyle = "#7f8385";
+        ctx.fillRect(newX,newY,width,height);
+    }
+    function drawEye(x,y,width,height){
+      ctx.lineWidth = 1;
+      ctx.strokeStyle = "#FF0000";
+      ctx.beginPath();
+      ctx.moveTo(x-Math.min(width,height)/4,y);
+      ctx.lineTo(x+Math.min(width,height)/4,y);
+      ctx.moveTo(x,y-Math.min(width,height)/4);
+      ctx.lineTo(x,y+Math.min(width,height)/4);
+      ctx.stroke();
+    }
+    function degrees(radians) {
+      return radians * (180 / Math.PI);
+    }
+    function radians(degrees) {
+      return degrees * (Math.PI/180);
+    }
+    function updateOutputs() {
+      const mode = document.querySelector('input[name="mode"]:checked').value;
+      const width = parseFloat(document.getElementById('width').value);
+      const height = parseFloat(document.getElementById('height').value);
+      const resx = parseFloat(document.getElementById('resx').value);
+      const resy = parseFloat(document.getElementById('resy').value);
+      const IPD = parseFloat(document.getElementById('IPD').value);
+      const dualoffset = parseFloat(document.getElementById('dualoffset').value);
+      const divider = parseFloat(document.getElementById('divider').value);
+      const lensD = parseFloat(document.getElementById('lensD').value);
+      const lensF = parseFloat(document.getElementById('lensF').value);
+      const lensT = parseFloat(document.getElementById('lensT').value);
+      const desiredFocus = parseFloat(document.getElementById('desiredFocus').value);
+      const tolerance = parseFloat(document.getElementById('tolerance').value);
+      const sweetFOV = parseFloat(document.getElementById('sweetFOV').value);
+      const pixWidth = width / resx;
+      const pixHeight = height / resy;
+      const lensO = Math.round((-1 / ((1 / -lensF) - (1 / desiredFocus))) / tolerance) * tolerance;
+      const virtualPlane = -1 / (1/lensF - 1/lensO);
+      const magnification = lensF / (lensF - lensO);
+      const verticalFOV = degrees(2 * Math.atan((magnification * (height / 2)) / virtualPlane));
+      var pixelLoss = 0;
+      var temporal = 0;
+      var nasal = 0;
+      if (mode == "single"){
+        pixelLoss = (divider/pixWidth).toFixed(2);
+        temporal = degrees(Math.atan((magnification * ((width - IPD) / 2)) / virtualPlane));
+        nasal = degrees(Math.atan((magnification * ((IPD - divider) / 2)) / virtualPlane));
+      } else {
+        pixelLoss = 0;
+        temporal = degrees(Math.atan((magnification * ((width/2) + dualoffset)) / virtualPlane));
+        nasal = degrees(Math.atan((magnification * ((width/2) - dualoffset)) / virtualPlane));
+      }
+      const oneEye = nasal + temporal;
+      const monoFOV = temporal*2;
+      const binoFOV = nasal*2;
+      const monoCutoff = (lensD/2) / Math.tan(radians(temporal));
+      const binoCutoff = (lensD/2) / Math.tan(radians(nasal));
+      const vertCutoff = (lensD/2) / Math.tan(radians(verticalFOV/2));
+      const ideal = Math.min(binoCutoff,monoCutoff,vertCutoff);
+      const sweetD = 2 * lensF * Math.tan(radians(sweetFOV/2));
+      var ppdhorizontal = 0;
+      if (mode == "single"){
+        ppdhorizontal = ((resx - (divider/pixWidth))/2)/(oneEye);
+      } else {
+        ppdhorizontal = resx/oneEye;
+      }
+      const ppdvertical = resy/verticalFOV;
+      const sweetPPDhorizontal = (sweetD/pixWidth)/sweetFOV;
+      const sweetPPDvertical = (sweetD/pixHeight)/sweetFOV;
+      const eyeScreenOffset = lensO + ideal;
+      const diagFOV = degrees(Math.sqrt(radians(oneEye) ** 2 + radians(verticalFOV) ** 2));
+      const diagCutoff = (lensD/2) / Math.tan(radians(diagFOV/2));
+
+      //Background Fill
+      ctx.fillStyle = "#000000";
+      ctx.fillRect(0, 0, 800, 605);
+      ctx.fillStyle = "#DDDDDD";
+      ctx.fillRect(2, 2, 796, 601);
+
+      const ratio = width/height;
+      const doubleRatio = (width+(dualoffset*2)+IPD)/height;
+      var pixelFactor = 0;
+      var newWidth = 0;
+      var newHeight = 0;
+      var scaleIPD = 0;
+      if (mode == "single"){
+        //Single Screen
+        if (ratio >= 800/605){
+            newWidth = 720;
+            newHeight = 720/ratio;
+        } else { 
+            newWidth = 545*ratio;
+            newHeight = 545;
+        }
+        pixelFactor = newHeight/height;
+        scaleIPD = IPD*pixelFactor;
+        drawGrid(pixelFactor);
+        drawScreen(centerX,centerY,newWidth,newHeight);
+        drawEye(centerX-(scaleIPD/2),centerY,newWidth,newHeight);
+        drawEye(centerX+(scaleIPD/2),centerY,newWidth,newHeight);
+        //Divider
+        ctx.fillStyle = "#000000";
+        ctx.fillRect(centerX-(divider/2*pixelFactor),centerY-newHeight/2,divider*pixelFactor,newHeight);
+      } else {
+        //Dual Screen
+        if (doubleRatio >= 800/605){
+            pixelFactor = (720/doubleRatio)/height;
+        } else { 
+            pixelFactor = (545*doubleRatio)/(width+IPD+(dualoffset*2));
+        }
+        newWidth = width*pixelFactor;
+        newHeight = height*pixelFactor;
+        scaleIPD = IPD*pixelFactor;
+        drawGrid(pixelFactor);
+        drawScreen(centerX-(scaleIPD/2)-(dualoffset*pixelFactor),centerY,newWidth,newHeight);
+        drawScreen(centerX+(scaleIPD/2)+(dualoffset*pixelFactor),centerY,newWidth,newHeight);
+        drawEye(centerX-(scaleIPD/2),centerY,newWidth,newHeight);
+        drawEye(centerX+(scaleIPD/2),centerY,newWidth,newHeight);
+      }
+
+      const scaleMono = pixelFactor*(lensF * Math.tan(radians(monoFOV/2)))
+      const scaleBino = pixelFactor*(lensF * Math.tan(radians(binoFOV/2)))
+      const scaleVert = pixelFactor*(lensF * Math.tan(radians(verticalFOV/2)))
+      const scaleDiag = pixelFactor*(lensF * Math.tan(radians(diagFOV/2)))
+
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.strokeStyle = "#ff00ff";
+      ctx.arc(centerX-(scaleIPD/2),centerY,scaleMono,0,2*Math.PI);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.arc(centerX+(scaleIPD/2),centerY,scaleMono,0,2*Math.PI);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.strokeStyle = "#ffff00";
+      ctx.arc(centerX-(scaleIPD/2),centerY,scaleBino,0,2*Math.PI);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.arc(centerX+(scaleIPD/2),centerY,scaleBino,0,2*Math.PI);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.strokeStyle = "#00ffff";
+      ctx.arc(centerX-(scaleIPD/2),centerY,scaleVert,0,2*Math.PI);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.arc(centerX+(scaleIPD/2),centerY,scaleVert,0,2*Math.PI);
+      ctx.stroke();/*
+      ctx.beginPath();
+      ctx.strokeStyle = "#00ff00";
+      ctx.arc(centerX-(scaleIPD/2),centerY,scaleDiag,0,2*Math.PI);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.arc(centerX+(scaleIPD/2),centerY,scaleDiag,0,2*Math.PI);
+      ctx.stroke();*/
+
+      document.getElementById('pixelDimensions').value = pixWidth.toFixed(3)*1000 + "x" + pixHeight.toFixed(3)*1000;
+      document.getElementById('pixelLoss').value = pixelLoss + "px";
+      document.getElementById('focalPlane').value = virtualPlane.toFixed(2);
+      document.getElementById('magnification').value = magnification.toFixed(2);
+      document.getElementById('idealRelief').value = ideal.toFixed(2);
+      document.getElementById('lensO').value = lensO.toFixed(2);
+      document.getElementById('eyeScreen').value = eyeScreenOffset.toFixed(2);
+      document.getElementById('monoFOV').value = monoFOV.toFixed(2);
+      document.getElementById('binoFOV').value = binoFOV.toFixed(2);
+      document.getElementById('vertFOV').value = verticalFOV.toFixed(2);
+      document.getElementById('oneEyeFOV').value = oneEye.toFixed(2);
+      document.getElementById('diagFOV').value = diagFOV.toFixed(2);
+      document.getElementById('temporal').value = temporal.toFixed(2);
+      document.getElementById('nasal').value = nasal.toFixed(2);
+      document.getElementById('sweetD').value = sweetD.toFixed(2);
+      document.getElementById('monoCutoff').value = monoCutoff.toFixed(2);
+      document.getElementById('binoCutoff').value = binoCutoff.toFixed(2);
+      document.getElementById('vertCutoff').value = vertCutoff.toFixed(2);
+      document.getElementById('diagCutoff').value = diagCutoff.toFixed(2);
+      document.getElementById('ppdHorizontal').value = ppdhorizontal.toFixed(2);
+      document.getElementById('ppdVertical').value = ppdvertical.toFixed(2);
+      document.getElementById('ppdSweetHorizontal').value = sweetPPDhorizontal.toFixed(2);
+      document.getElementById('ppdSweetVertical').value = sweetPPDvertical.toFixed(2);
+    }
+    updateOutputs();
+    var radioButtons = document.querySelectorAll('input[name="mode"]');
+    radioButtons.forEach(function(radioButton) {
+      radioButton.addEventListener('change', updateOutputs);
+    });
+    const inputs = document.querySelectorAll('.input-group input');
+    inputs.forEach((input) => {
+      input.addEventListener('input', updateOutputs);
+    });
+  </script>
+
+
+</body></html>
