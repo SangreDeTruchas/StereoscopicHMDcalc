@@ -182,11 +182,6 @@
                     characteristics such as field of view and angular pixel density.
                 </p>
                 <p>
-                    To the left you'll find the navigation pane, which can take you directly to a
-                    specific tool. You can also progress through the sections one-by-one using
-                    the Previous and Next buttons near the bottom of the page.
-                </p>
-                <p>
                     All of this is based on basic geometry and the thin-lens equation. This is not a 
                     tutorial, some knowledge of the topics at hand is required to take full advantage of these tools.
                     Results may not be applicable to all arrangements. Lenses can be incredibly
@@ -340,7 +335,7 @@
         // JavaScript code to handle calculations and display results
 
         let currentSection = 1;
-        const sectionCount = 4;
+        const sectionCount = 3;
 
         const in_objectDistance = document.querySelectorAll('.object-distance');
         const in_imageDistance  = document.querySelectorAll('.image-distance');
@@ -377,6 +372,14 @@
             document.getElementById('previous-button').disabled = currentSection === 1;
             document.getElementById('next-button').disabled = currentSection === sectionCount;
         }
+        
+        window.addEventListener('load', () => {
+            const hash = window.location.hash;
+            if (hash) {
+              const section = parseInt(hash.substr(1).split('-')[1]);
+              navigateToSection(section);
+            }
+        });
 
         function calculateEyeRelief() {
             const relief = tl.occlusionDistance(lensD, fov).toFixed(2);
